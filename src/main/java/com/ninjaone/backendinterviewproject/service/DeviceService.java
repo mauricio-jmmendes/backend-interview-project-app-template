@@ -1,5 +1,6 @@
 package com.ninjaone.backendinterviewproject.service;
 
+import com.ninjaone.backendinterviewproject.common.AppConstants;
 import com.ninjaone.backendinterviewproject.database.DeviceRepository;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.DeviceMapper;
@@ -27,7 +28,7 @@ public class DeviceService {
 	}
 
 	public DeviceDTO getDeviceById(Long id) throws ResourceNotFoundException {
-		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "Id", id));
+		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(AppConstants.DEVICE, "Id", id));
 		return deviceMapper.toDTO(device);
 	}
 
@@ -41,7 +42,7 @@ public class DeviceService {
 	}
 
 	public void mergeEntity(Long id, DeviceDTO deviceDTO) throws ResourceNotFoundException {
-		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "Id", id));
+		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(AppConstants.DEVICE, "Id", id));
 		Device toBeUpdated = deviceMapper.toEntity(deviceDTO);
 		device.setSystemName(toBeUpdated.getSystemName());
 		device.setDeviceType(toBeUpdated.getDeviceType());

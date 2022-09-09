@@ -41,6 +41,14 @@ public class Device implements Serializable {
 	@JoinColumn(name = "customer_id", referencedColumnName="id")
 	private Customer customer;
 
+	public Device(String systemName, DeviceType deviceType) {
+		this.systemName = systemName;
+		this.deviceType = deviceType;
+	}
+
+	public Device() {
+	}
+
 	public Long getId() {
 		return id;
 	}

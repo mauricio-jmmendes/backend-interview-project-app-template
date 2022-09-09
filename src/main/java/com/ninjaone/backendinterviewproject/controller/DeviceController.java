@@ -1,8 +1,10 @@
 package com.ninjaone.backendinterviewproject.controller;
 
+import com.ninjaone.backendinterviewproject.controller.domain.ApiResponse;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
 import com.ninjaone.backendinterviewproject.service.DeviceService;
+import java.net.URI;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/devices")
@@ -31,10 +34,12 @@ public class DeviceController {
 	}
 
 	@PostMapping
-	public ResponseEntity<DeviceDTO> save(@RequestBody DeviceDTO deviceDTO) {
+	public ResponseEntity<ApiResponse> create(@RequestBody DeviceDTO deviceDTO) {
 		if (isValid(deviceDTO)) {
 			DeviceDTO savedDevice = deviceService.saveEntity(deviceDTO);
-			return ResponseEntity.ok(savedDevice);
+			URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/customers/{id}").buildAndExpand(savedDevice.getId()).toUri();
+			return ResponseEntity.created(location).body(new ApiResponse(true, "Device created successfully"));
+//			return ResponseEntity.ok(savedDevice);
 		} else {
 			return ResponseEntity.badRequest().build();
 		}

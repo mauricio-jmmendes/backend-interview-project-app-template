@@ -1,6 +1,8 @@
 package com.ninjaone.backendinterviewproject.model;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.StringJoiner;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,4 +49,28 @@ public class Authority implements Serializable {
 		this.type = name;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Authority)) {
+			return false;
+		}
+		Authority authority = (Authority) o;
+		return id.equals(authority.id) && type == authority.type;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, type);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", Authority.class.getSimpleName() + "[", "]")
+				.add("id=" + id)
+				.add("type=" + type)
+				.toString();
+	}
 }

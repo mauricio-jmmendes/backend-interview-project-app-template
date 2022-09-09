@@ -2,6 +2,7 @@ package com.ninjaone.backendinterviewproject.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
 import java.util.StringJoiner;
 import javax.persistence.Column;
@@ -19,6 +20,10 @@ import javax.persistence.Table;
 @Table(name = "service")
 public class ServiceEntity implements Serializable {
 
+	public enum Status {
+		PENDING, DONE
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
@@ -29,6 +34,10 @@ public class ServiceEntity implements Serializable {
 	private ServiceType serviceType;
 	private String description;
 	private BigDecimal cost;
+
+	private Date executionDate;
+
+	private Status status;
 
 	@ManyToOne
 	@JoinColumn(name = "device_id", referencedColumnName = "id")
@@ -83,6 +92,22 @@ public class ServiceEntity implements Serializable {
 		this.device = device;
 	}
 
+	public Date getExecutionDate() {
+		return executionDate;
+	}
+
+	public void setExecutionDate(Date executionDate) {
+		this.executionDate = executionDate;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -108,6 +133,8 @@ public class ServiceEntity implements Serializable {
 				.add("serviceType=" + serviceType)
 				.add("description='" + description + "'")
 				.add("cost=" + cost)
+				.add("executionDate=" + executionDate)
+				.add("status=" + status)
 				.add("device=" + device)
 				.toString();
 	}

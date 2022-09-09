@@ -1,5 +1,6 @@
 package com.ninjaone.backendinterviewproject.service;
 
+import com.ninjaone.backendinterviewproject.common.AppConstants;
 import com.ninjaone.backendinterviewproject.database.ServiceRepository;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.ServiceMapper;
@@ -27,7 +28,7 @@ public class ServiceManager {
 	}
 
 	public ServiceDTO getServiceById(Long id) throws ResourceNotFoundException {
-		ServiceEntity device = serviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service", "Id", id));
+		ServiceEntity device = serviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(AppConstants.SERVICE, "id", id));
 		return serviceMapper.toDTO(device);
 	}
 
