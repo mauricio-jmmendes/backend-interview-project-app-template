@@ -1,17 +1,17 @@
 package com.ninjaone.backendinterviewproject.service;
 
-import com.ninjaone.backendinterviewproject.controller.DeviceDTO;
 import com.ninjaone.backendinterviewproject.database.DeviceRepository;
-import com.ninjaone.backendinterviewproject.exception.DeviceNotFoundException;
+import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.DeviceMapper;
 import com.ninjaone.backendinterviewproject.model.Device;
-import org.springframework.stereotype.Service;
-
+import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DeviceService {
+
 	private final DeviceRepository deviceRepository;
 	private final DeviceMapper deviceMapper;
 
@@ -26,21 +26,22 @@ public class DeviceService {
 		return deviceMapper.toDTO(device);
 	}
 
-	public DeviceDTO getDeviceById(String id) throws DeviceNotFoundException {
-		Device device = deviceRepository.findById(id).orElseThrow(DeviceNotFoundException::new);
+	public DeviceDTO getDeviceById(Long id) throws ResourceNotFoundException {
+		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "Id", id));
 		return deviceMapper.toDTO(device);
 	}
 
-	public void deleteDeviceById(String id) {
+	public void deleteDeviceById(Long id) {
 		deviceRepository.deleteById(id);
 	}
 
 	public List<DeviceDTO> getAll() {
-		return deviceRepository.findAll().stream().map(deviceMapper::toDTO).collect(Collectors.toList());
+		return deviceRepository.findAll().stream().map(deviceMapper::toDTO)
+													 .collect(Collectors.toList());
 	}
 
-	public void mergeEntity(String id, DeviceDTO deviceDTO) throws DeviceNotFoundException {
-		Device device = deviceRepository.findById(id).orElseThrow(DeviceNotFoundException::new);
+	public void mergeEntity(Long id, DeviceDTO deviceDTO) throws ResourceNotFoundException {
+		Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device", "Id", id));
 		Device toBeUpdated = deviceMapper.toEntity(deviceDTO);
 		device.setSystemName(toBeUpdated.getSystemName());
 		device.setDeviceType(toBeUpdated.getDeviceType());

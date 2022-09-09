@@ -74,7 +74,7 @@ class DeviceControllerTest {
 	}
 
 	@Test
-	public void updateDevices() throws Exception {
+	void updateDevices() throws Exception {
 		mvc.perform(post("/devices")
 						.contentType("application/json")
 						.content("{\"type\":\"WINDOWS_SERVER\",\"systemName\":\"Windows OS\"}"))
@@ -89,7 +89,7 @@ class DeviceControllerTest {
 	}
 
 	@Test
-	public void deleteDevices() throws Exception {
+	void deleteDevices() throws Exception {
 		mvc.perform(post("/devices/")
 						.contentType("application/json")
 						.content("{\"type\":\"WINDOWS_SERVER\",\"systemName\":\"Windows OS\"}"))

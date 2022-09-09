@@ -1,6 +1,7 @@
-package com.ninjaone.backendinterviewproject.controller;
+package com.ninjaone.backendinterviewproject.model.dto;
 
 public class DeviceDTO {
+
 	private String id;
 	private String systemName;
 	private String type;

@@ -1,7 +1,18 @@
 package com.ninjaone.backendinterviewproject.service;
 
-import com.ninjaone.backendinterviewproject.database.SampleRepository;
-import com.ninjaone.backendinterviewproject.model.Sample;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
+import com.ninjaone.backendinterviewproject.database.DeviceRepository;
+import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
+import com.ninjaone.backendinterviewproject.mappings.DeviceMapper;
+import com.ninjaone.backendinterviewproject.model.Device;
+import com.ninjaone.backendinterviewproject.model.DeviceType;
+import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,47 +21,52 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
-public class SampleServiceTest {
-    public static final String ID = "12345";
+class DeviceServiceTestSupply {
+	public static final Long ID = 123L;
 
-    @Mock
-    private SampleRepository sampleRepository;
+	@Mock
+	private DeviceRepository deviceRepository;
 
-    @InjectMocks
-    private SampleService testObject;
+	@Mock
+	private DeviceMapper deviceMapper;
 
-    private Sample sampleEntity;
+	@InjectMocks
+	private DeviceService deviceService;
 
-    @BeforeEach
-    void setup(){
-        sampleEntity = new Sample(ID, "value");
-    }
+	private Device device;
 
-    @Test
-    void getSampleData() {
-        when(sampleRepository.findById(ID)).thenReturn(Optional.of(sampleEntity));
-        Optional<Sample> sampleEntityOptional = testObject.getSampleEntity(ID);
-        Sample actualEntity = sampleEntityOptional.orElse(null);
-        assert actualEntity != null;
-        assertEquals(sampleEntity.getValue(), actualEntity.getValue());
-    }
+	private DeviceDTO deviceDTO;
 
-    @Test
-    void saveSampleData() {
-        when(sampleRepository.save(sampleEntity)).thenReturn(sampleEntity);
-        assertEquals(sampleEntity, testObject.saveSampleEntity(sampleEntity));
-    }
+	@BeforeEach
+	void setup() {
+		device = new Device();
+		device.setId(ID);
+		device.setSystemName("Windows Server X");
+		device.setDeviceType(DeviceType.WINDOWS_SERVER);
 
-    @Test
-    void deleteSampleData(){
-        doNothing().when(sampleRepository).deleteById(ID);
-        testObject.deleteSampleEntity(ID);
-        Mockito.verify(sampleRepository, times(1)).deleteById(ID);
-    }
+		deviceDTO = new DeviceDTO(String.valueOf(ID), "Windows Server X", DeviceType.WINDOWS_SERVER.toString());
+
+	}
+
+	@Test
+	void getDeviceData() throws ResourceNotFoundException {
+		when(deviceRepository.findById(ID)).thenReturn(Optional.of(device));
+		when(deviceMapper.toDTO(any(Device.class))).thenReturn(deviceDTO);
+		DeviceDTO deviceDTO = deviceService.getDeviceById(ID);
+		assertEquals(device.getSystemName(), deviceDTO.getSystemName());
+	}
+
+	@Test
+	void saveDeviceData() {
+		when(deviceRepository.save(device)).thenReturn(device);
+		assertEquals(deviceDTO, deviceService.saveEntity(deviceDTO));
+	}
+
+	@Test
+	void deleteDeviceData() {
+		doNothing().when(deviceRepository).deleteById(ID);
+		deviceService.deleteDeviceById(ID);
+		Mockito.verify(deviceRepository, times(1)).deleteById(ID);
+	}
 }

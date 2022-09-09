@@ -1,7 +1,7 @@
 package com.ninjaone.backendinterviewproject.mappings;
 
-import com.ninjaone.backendinterviewproject.controller.DeviceDTO;
 import com.ninjaone.backendinterviewproject.model.Device;
+import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
