@@ -1,81 +1,63 @@
 package com.ninjaone.backendinterviewproject.controller;
 
-import com.ninjaone.backendinterviewproject.controller.domain.ApiResponse;
-import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
+import com.ninjaone.backendinterviewproject.exception.InvalidRequestException;
+import com.ninjaone.backendinterviewproject.model.Device;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
-import com.ninjaone.backendinterviewproject.service.DeviceService;
-import java.net.URI;
+import com.ninjaone.backendinterviewproject.security.AuthenticatedUser;
+import com.ninjaone.backendinterviewproject.security.LoggedUser;
+import com.ninjaone.backendinterviewproject.service.DeviceBO;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/devices")
 public class DeviceController {
 
-	private final DeviceService deviceService;
+	private final DeviceBO deviceBO;
 
-	public DeviceController(DeviceService deviceService) {
-		this.deviceService = deviceService;
-	}
-
-	private static boolean isValid(DeviceDTO deviceDTO) {
-		return !StringUtils.isBlank(deviceDTO.getType()) && !StringUtils.isBlank(
-				deviceDTO.getSystemName());
-	}
-
-	@PostMapping
-	public ResponseEntity<ApiResponse> create(@RequestBody DeviceDTO deviceDTO) {
-		if (isValid(deviceDTO)) {
-			DeviceDTO savedDevice = deviceService.createEntity(deviceDTO);
-			URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/customers/{id}").buildAndExpand(savedDevice.getId()).toUri();
-			return ResponseEntity.created(location).body(new ApiResponse(true, "Device created successfully"));
-//			return ResponseEntity.ok(savedDevice);
-		} else {
-			return ResponseEntity.badRequest().build();
-		}
+	public DeviceController(DeviceBO deviceBO) {
+		this.deviceBO = deviceBO;
 	}
 
 	@GetMapping(path = "/{id}")
-	public ResponseEntity<DeviceDTO> findById(@PathVariable("id") Long id) {
-		DeviceDTO deviceDTO;
-		try {
-			deviceDTO = deviceService.getDeviceById(id);
-		} catch (ResourceNotFoundException e) {
-			return ResponseEntity.noContent().build();
+	public ResponseEntity<DeviceDTO> findById(@LoggedUser AuthenticatedUser authUser, @PathVariable("id") Long id) {
+		boolean noneMatch = authUser.getCustomer().getDevices().stream().noneMatch(d -> d.getId().equals(id));
+		if (noneMatch) {
+			throw new InvalidRequestException("Device not found or you are not authorized to access it - deviceId=" + id, null);
 		}
-
-		return ResponseEntity.ok(deviceDTO);
+		Device storedDevice = deviceBO.getById(id);
+		return ResponseEntity.ok(deviceBO.mapper().toDTO(storedDevice));
 	}
 
 	@GetMapping()
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<List<DeviceDTO>> findAll() {
-		return ResponseEntity.ok(deviceService.getAll());
+		return ResponseEntity.ok(deviceBO.getAll().stream().map(deviceBO.mapper()::toDTO).collect(Collectors.toList()));
 	}
 
-	@PutMapping(path = "/{id}")
-	public ResponseEntity<String> updateDevice(@PathVariable("id") Long id,
-																						 @RequestBody DeviceDTO deviceDTO) {
-		try {
-			deviceService.mergeEntity(id, deviceDTO);
-			return ResponseEntity.ok("");
-		} catch (ResourceNotFoundException e) {
-			return ResponseEntity.notFound().build();
+	@PutMapping()
+	public ResponseEntity<DeviceDTO> update(@LoggedUser AuthenticatedUser authUser, @RequestParam DeviceDTO deviceDTO) {
+		boolean noneMatch = authUser.getCustomer().getDevices().stream().noneMatch(d -> Objects.equals(d.getId(), deviceDTO.getId()));
+		if (noneMatch) {
+			throw new InvalidRequestException("Device not found or you are not authorized to access it - deviceId=" + deviceDTO.getId(), null);
 		}
+		Device updatedDevice = deviceBO.update(deviceDTO);
+		return ResponseEntity.ok(deviceBO.mapper().toDTO(updatedDevice));
 	}
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
-		deviceService.deleteDeviceById(id);
+		deviceBO.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 }

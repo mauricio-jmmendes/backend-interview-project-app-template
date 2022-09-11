@@ -1,12 +1,11 @@
-package com.ninjaone.backendinterviewproject.model.dto;
+package com.ninjaone.backendinterviewproject.controller.domain;
 
 import com.ninjaone.backendinterviewproject.common.AppConstants.ServiceStatus;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-public class ServiceDTO {
+public class CreateServiceOrderRequest {
 
-	private Long id;
+	private Long deviceId;
 
 	private String type;
 
@@ -14,26 +13,25 @@ public class ServiceDTO {
 
 	private BigDecimal cost;
 
-	private LocalDate executionDate;
-
 	private ServiceStatus status;
 
-	public ServiceDTO(Long id, String type, String description, BigDecimal cost) {
-		this.id = id;
+	public CreateServiceOrderRequest(Long deviceId, String type, String description, BigDecimal cost, ServiceStatus status) {
+		this.deviceId = deviceId;
 		this.type = type;
 		this.description = description;
 		this.cost = cost;
+		this.status = status;
 	}
 
-	public ServiceDTO() {
+	public CreateServiceOrderRequest() {
 	}
 
-	public Long getId() {
-		return id;
+	public Long getDeviceId() {
+		return deviceId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setDeviceId(Long deviceId) {
+		this.deviceId = deviceId;
 	}
 
 	public String getType() {
@@ -58,14 +56,6 @@ public class ServiceDTO {
 
 	public void setCost(BigDecimal cost) {
 		this.cost = cost;
-	}
-
-	public LocalDate getExecutionDate() {
-		return executionDate;
-	}
-
-	public void setExecutionDate(LocalDate executionDate) {
-		this.executionDate = executionDate;
 	}
 
 	public ServiceStatus getStatus() {

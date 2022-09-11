@@ -4,8 +4,7 @@ import com.ninjaone.backendinterviewproject.controller.domain.ErrorResponse;
 import com.ninjaone.backendinterviewproject.controller.domain.ErrorResponse.Type;
 import com.ninjaone.backendinterviewproject.exception.InvalidRequestException;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
-import java.util.List;
-import org.springframework.context.MessageSource;
+import java.util.function.Consumer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,10 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice(annotations = RestController.class)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-	private final MessageSource messageSource;
-
-	public RestExceptionHandler(MessageSource messageSource) {
-		this.messageSource = messageSource;
+	private Consumer<FieldError> mapToError(ErrorResponse errorResponse) {
+		return e -> errorResponse.addError(e.getField(), e.getCode(), e.getDefaultMessage());
 	}
 
 	@ExceptionHandler(value = {Exception.class, RuntimeException.class})
@@ -35,21 +32,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = {ResourceNotFoundException.class})
 	@ResponseBody
 	public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		ErrorResponse errorResponse = new ErrorResponse(Type.DANGER, "RESOURCE_NOT_FOUND", ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(value = {InvalidRequestException.class})
 	public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException ex, WebRequest req) {
-		ErrorResponse errorResponse = new ErrorResponse(Type.DANGER, "INVALID_REQUEST", "request data is invalid.");
+		ErrorResponse errorResponse = new ErrorResponse(Type.DANGER, "INVALID_REQUEST", ex.getMessage());
 		BindingResult result = ex.getErrors();
-		List<FieldError> fieldErrors = result.getFieldErrors();
-		if (!fieldErrors.isEmpty()) {
-			fieldErrors.forEach(e -> {
-				errorResponse.addError(e.getField(), e.getCode(), e.getDefaultMessage());
-			});
-		}
-
-		return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+		result.getFieldErrors().forEach(mapToError(errorResponse));
+		return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
 	}
-
 }

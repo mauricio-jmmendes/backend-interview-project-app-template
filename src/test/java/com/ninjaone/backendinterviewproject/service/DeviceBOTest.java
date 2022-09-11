@@ -12,6 +12,7 @@ import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.DeviceMapper;
 import com.ninjaone.backendinterviewproject.model.Device;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import org.mockito.quality.Strictness;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class DeviceServiceTest {
+class DeviceBOTest {
 
 	public static final Long ID = 123L;
 
@@ -36,7 +37,7 @@ class DeviceServiceTest {
 	private DeviceMapper deviceMapper;
 
 	@InjectMocks
-	private DeviceService deviceService;
+	private DeviceBO deviceBO;
 
 	private Device device;
 
@@ -49,31 +50,31 @@ class DeviceServiceTest {
 		device.setSystemName("Windows Server X");
 		device.setDeviceType(DeviceType.WINDOWS_SERVER.name());
 
-		deviceDTO = new DeviceDTO(String.valueOf(ID), "Windows Server X", DeviceType.WINDOWS_SERVER.name());
+		deviceDTO = new DeviceDTO(ID, "Windows Server X", DeviceType.WINDOWS_SERVER.name(), List.of());
 
 	}
 
 	@Test
-	void getDeviceData() throws ResourceNotFoundException {
+	void getDevice() throws ResourceNotFoundException {
 		when(deviceRepository.findById(ID)).thenReturn(Optional.of(device));
 		when(deviceMapper.toDTO(any(Device.class))).thenReturn(deviceDTO);
-		DeviceDTO deviceDTO = deviceService.getDeviceById(ID);
-		assertEquals(device.getSystemName(), deviceDTO.getSystemName());
+		Device storedDevice = deviceBO.getById(ID);
+		assertEquals(device.getSystemName(), storedDevice.getSystemName());
 	}
 
 	@Test
-	void saveDeviceData() {
+	void saveDevice() {
 		when(deviceRepository.save(any(Device.class))).thenReturn(device);
 		when(deviceMapper.toEntity(any(DeviceDTO.class))).thenReturn(device);
 		when(deviceMapper.toDTO(any(Device.class))).thenReturn(deviceDTO);
-		DeviceDTO savedDevice = deviceService.createEntity(deviceDTO);
-		assertEquals(device.getDeviceType(), savedDevice.getType());
+		Device savedDevice = deviceBO.save(deviceDTO);
+		assertEquals(device.getDeviceType(), savedDevice.getDeviceType());
 	}
 
 	@Test
-	void deleteDeviceData() {
+	void deleteDevice() {
 		doNothing().when(deviceRepository).deleteById(ID);
-		deviceService.deleteDeviceById(ID);
+		deviceBO.deleteById(ID);
 		Mockito.verify(deviceRepository, times(1)).deleteById(ID);
 	}
 }

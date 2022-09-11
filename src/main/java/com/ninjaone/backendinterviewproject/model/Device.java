@@ -26,14 +26,14 @@ public class Device implements Serializable {
 	private Long id;
 
 	@NotBlank
-	@Column(name = "system_name", unique = true)
+	@Column(name = "system_name")
 	private String systemName;
 
-	@Column(name = "device_type", unique = true)
+	@Column(name = "device_type")
 	private String deviceType;
 
 	@OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private final Set<ServiceEntity> services = new HashSet<>();
+	private Set<ServiceOrder> services = new HashSet<>();
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id", referencedColumnName = "id")
@@ -69,6 +69,32 @@ public class Device implements Serializable {
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	public Set<ServiceOrder> getServices() {
+		return services;
+	}
+
+	public void setServices(Set<ServiceOrder> services) {
+		this.services = services;
+	}
+
+	public void addService(ServiceOrder serviceOrder) {
+		this.services.add(serviceOrder);
+		serviceOrder.setDevice(this);
+	}
+
+	public void removeService(ServiceOrder serviceOrder) {
+		this.services.remove(serviceOrder);
+		serviceOrder.setDevice(null);
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	@Override

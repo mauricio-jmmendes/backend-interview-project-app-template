@@ -1,22 +1,32 @@
 package com.ninjaone.backendinterviewproject.model.dto;
 
+import java.util.List;
+
 public class DeviceDTO {
 
-	private String id;
+	private Long id;
+
 	private String systemName;
+
 	private String type;
 
-	public DeviceDTO(String id, String systemName, String type) {
+	private List<ServiceDTO> purchasedServices;
+
+	public DeviceDTO(Long id, String systemName, String type, List<ServiceDTO> purchasedServices) {
 		this.id = id;
 		this.systemName = systemName;
 		this.type = type;
+		this.purchasedServices = purchasedServices;
 	}
 
-	public String getId() {
+	public DeviceDTO() {
+	}
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -36,4 +46,11 @@ public class DeviceDTO {
 		this.type = type;
 	}
 
+	public List<ServiceDTO> getPurchasedServices() {
+		return purchasedServices;
+	}
+
+	public void setPurchasedServices(List<ServiceDTO> purchasedServices) {
+		this.purchasedServices = purchasedServices;
+	}
 }

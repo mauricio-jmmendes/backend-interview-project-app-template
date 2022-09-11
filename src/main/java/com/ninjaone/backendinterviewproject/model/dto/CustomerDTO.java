@@ -1,5 +1,7 @@
 package com.ninjaone.backendinterviewproject.model.dto;
 
+import java.util.List;
+
 public class CustomerDTO {
 
 	private Long id;
@@ -12,11 +14,14 @@ public class CustomerDTO {
 
 	private String email;
 
-	public CustomerDTO(String documentId, String fullName, String nickname, String email) {
+	private List<DeviceDTO> devices;
+
+	public CustomerDTO(String documentId, String fullName, String nickname, String email, List<DeviceDTO> devices) {
 		this.documentId = documentId;
 		this.fullName = fullName;
 		this.nickname = nickname;
 		this.email = email;
+		this.devices = devices;
 	}
 
 	public CustomerDTO() {
@@ -63,4 +68,11 @@ public class CustomerDTO {
 		this.email = email;
 	}
 
+	public List<DeviceDTO> getDevices() {
+		return devices;
+	}
+
+	public void setDevices(List<DeviceDTO> devices) {
+		this.devices = devices;
+	}
 }

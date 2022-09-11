@@ -71,7 +71,7 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signUpCustomer(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult errResult) {
 		if (errResult.hasErrors()) {
-			throw new InvalidRequestException(errResult);
+			throw new InvalidRequestException("SignUpRequest contains errors!", errResult);
 		}
 
 		if (customerRepository.existsByNickname(signUpRequest.getUsername())) {

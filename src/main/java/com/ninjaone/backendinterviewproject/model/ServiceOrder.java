@@ -1,14 +1,13 @@
 package com.ninjaone.backendinterviewproject.model;
 
+import com.ninjaone.backendinterviewproject.common.AppConstants.ServiceStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.StringJoiner;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +20,7 @@ import javax.validation.constraints.Positive;
 
 @Entity
 @Table(name = "service")
-public class ServiceEntity implements Serializable {
+public class ServiceOrder implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +28,8 @@ public class ServiceEntity implements Serializable {
 	private Long id;
 
 	@NotBlank
-	@Enumerated(EnumType.STRING)
 	@Column(name = "service_type")
-	private ServiceType serviceType;
+	private String serviceType;
 
 	@NotBlank
 	private String description;
@@ -41,21 +39,22 @@ public class ServiceEntity implements Serializable {
 	private BigDecimal cost;
 
 	@Column(name = "execution_date")
-	private Date executionDate;
+	private LocalDate executionDate;
 
-	private Status status;
+	private ServiceStatus status;
 
 	@ManyToOne
 	@JoinColumn(name = "device_id", referencedColumnName = "id")
 	private Device device;
 
-	public ServiceEntity(ServiceType serviceType, String description, BigDecimal cost) {
+	public ServiceOrder(String serviceType, String description, BigDecimal cost, ServiceStatus status) {
 		this.serviceType = serviceType;
 		this.description = description;
 		this.cost = cost;
+		this.status = status;
 	}
 
-	public ServiceEntity() {
+	public ServiceOrder() {
 	}
 
 	public Long getId() {
@@ -66,11 +65,11 @@ public class ServiceEntity implements Serializable {
 		this.id = id;
 	}
 
-	public ServiceType getServiceType() {
+	public String getServiceType() {
 		return serviceType;
 	}
 
-	public void setServiceType(ServiceType serviceType) {
+	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
 	}
 
@@ -98,19 +97,19 @@ public class ServiceEntity implements Serializable {
 		this.device = device;
 	}
 
-	public Date getExecutionDate() {
+	public LocalDate getExecutionDate() {
 		return executionDate;
 	}
 
-	public void setExecutionDate(Date executionDate) {
+	public void setExecutionDate(LocalDate executionDate) {
 		this.executionDate = executionDate;
 	}
 
-	public Status getStatus() {
+	public ServiceStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(ServiceStatus status) {
 		this.status = status;
 	}
 
@@ -119,12 +118,15 @@ public class ServiceEntity implements Serializable {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof ServiceEntity)) {
+		if (!(o instanceof ServiceOrder)) {
 			return false;
 		}
-		ServiceEntity that = (ServiceEntity) o;
-		return id.equals(that.id) && serviceType == that.serviceType && description.equals(that.description) && cost.equals(that.cost) &&
-					 Objects.equals(device, that.device);
+		ServiceOrder that = (ServiceOrder) o;
+		return id.equals(that.id)
+					 && Objects.equals(serviceType, that.serviceType)
+					 && description.equals(that.description)
+					 && cost.equals(that.cost)
+					 && Objects.equals(device, that.device);
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class ServiceEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return new StringJoiner(", ", ServiceEntity.class.getSimpleName() + "[", "]")
+		return new StringJoiner(", ", ServiceOrder.class.getSimpleName() + "[", "]")
 				.add("id=" + id)
 				.add("serviceType=" + serviceType)
 				.add("description='" + description + "'")
@@ -143,9 +145,5 @@ public class ServiceEntity implements Serializable {
 				.add("status=" + status)
 				.add("device=" + device)
 				.toString();
-	}
-
-	public enum Status {
-		PENDING, DONE
 	}
 }

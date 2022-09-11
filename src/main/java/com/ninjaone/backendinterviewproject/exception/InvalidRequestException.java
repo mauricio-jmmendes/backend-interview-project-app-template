@@ -8,7 +8,8 @@ public class InvalidRequestException extends RuntimeException {
 
 	private final BindingResult errors;
 
-	public InvalidRequestException(BindingResult errors) {
+	public InvalidRequestException(String message, BindingResult errors) {
+		super(message);
 		this.errors = errors;
 	}
 

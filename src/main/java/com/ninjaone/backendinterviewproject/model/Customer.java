@@ -156,10 +156,12 @@ public class Customer implements Serializable {
 
 	public void addDevice(Device device) {
 		this.devices.add(device);
+		device.setCustomer(this);
 	}
 
 	public void removeDevice(Device device) {
 		this.devices.remove(device);
+		device.setCustomer(null);
 	}
 
 	@Override

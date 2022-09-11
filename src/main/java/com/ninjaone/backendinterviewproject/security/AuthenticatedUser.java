@@ -25,13 +25,17 @@ public class AuthenticatedUser implements UserDetails {
 
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	public AuthenticatedUser(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+	private final Customer customer;
+
+	public AuthenticatedUser(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities,
+													 Customer customer) {
 		this.id = id;
 		this.name = name;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.authorities = authorities;
+		this.customer = customer;
 	}
 
 	public static AuthenticatedUser create(Customer customer) {
@@ -44,7 +48,8 @@ public class AuthenticatedUser implements UserDetails {
 																 customer.getNickname(),
 																 customer.getEmail(),
 																 customer.getPassword(),
-																 authorities);
+																 authorities,
+																 customer);
 	}
 
 	public Long getId() {
@@ -92,6 +97,10 @@ public class AuthenticatedUser implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public Customer getCustomer() {
+		return customer;
 	}
 
 	@Override

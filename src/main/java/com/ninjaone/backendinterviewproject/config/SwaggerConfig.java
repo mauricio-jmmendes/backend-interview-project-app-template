@@ -1,8 +1,9 @@
 package com.ninjaone.backendinterviewproject.config;
 
-import com.sun.istack.NotNull;
+import com.ninjaone.backendinterviewproject.security.AuthenticatedUser;
 import java.util.Collections;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -25,6 +26,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket Api() {
 		return new Docket(DocumentationType.SWAGGER_2)
+				.ignoredParameterTypes(AuthenticatedUser.class)
 				.apiInfo(metaData())
 				.securityContexts(Collections.singletonList(securityContext()))
 				.securitySchemes(Collections.singletonList(apiKey()))

@@ -13,4 +13,12 @@ public final class AppConstants {
 	public enum DeviceType {
 		WINDOWS_WORKSTATION, WINDOWS_SERVER, LINUX, MAC
 	}
+
+	public enum ServiceType {
+		DEVICE_MAINTENANCE, ANTIVIRUS, BACKUP, PSA, SCREEN_SHARE
+	}
+
+	public enum ServiceStatus {
+		PENDING, DONE
+	}
 }
