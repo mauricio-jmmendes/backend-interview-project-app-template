@@ -36,7 +36,7 @@ public class DeviceController {
 	@PostMapping
 	public ResponseEntity<ApiResponse> create(@RequestBody DeviceDTO deviceDTO) {
 		if (isValid(deviceDTO)) {
-			DeviceDTO savedDevice = deviceService.saveEntity(deviceDTO);
+			DeviceDTO savedDevice = deviceService.createEntity(deviceDTO);
 			URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/customers/{id}").buildAndExpand(savedDevice.getId()).toUri();
 			return ResponseEntity.created(location).body(new ApiResponse(true, "Device created successfully"));
 //			return ResponseEntity.ok(savedDevice);

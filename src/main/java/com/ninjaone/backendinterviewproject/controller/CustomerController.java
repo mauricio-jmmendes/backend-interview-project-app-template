@@ -25,25 +25,26 @@ public class CustomerController {
 	}
 
 	@GetMapping(path = "/{id}")
-	@PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+	@PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
 	public ResponseEntity<CustomerDTO> findById(@PathVariable("id") Long id) {
 		CustomerDTO customerDTO;
 		try {
 			customerDTO = customerService.findById(id);
 		} catch (ResourceNotFoundException e) {
-			return ResponseEntity.noContent().build();
+			return ResponseEntity.notFound().build();
 		}
 
 		return ResponseEntity.ok(customerDTO);
 	}
 
 	@GetMapping()
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<List<CustomerDTO>> findAll() {
 		return ResponseEntity.ok(customerService.findAll());
 	}
 
 	@PutMapping(path = "/{id}")
+	@PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
 	public ResponseEntity<String> updateCustomer(@PathVariable("id") Long id,
 																							 @RequestBody CustomerDTO customerDTO) {
 		try {
@@ -55,6 +56,7 @@ public class CustomerController {
 	}
 
 	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
 		customerService.deleteCustomer(id);
 		return ResponseEntity.noContent().build();

@@ -1,112 +1,112 @@
 package com.ninjaone.backendinterviewproject.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ninjaone.backendinterviewproject.model.dto.CustomerDTO;
-import com.ninjaone.backendinterviewproject.service.CustomerService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static com.ninjaone.backendinterviewproject.util.LogInUtils.getTokenForLogin;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ninjaone.backendinterviewproject.database.AuthorityRepository;
+import com.ninjaone.backendinterviewproject.database.CustomerRepository;
+import com.ninjaone.backendinterviewproject.model.AuthType;
+import com.ninjaone.backendinterviewproject.model.Authority;
+import com.ninjaone.backendinterviewproject.model.Customer;
+import com.ninjaone.backendinterviewproject.util.AbstractRestControllerTest;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-class CustomerControllerTest {
+@TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
+class CustomerControllerTest extends AbstractRestControllerTest {
+
+	@Autowired
+	ObjectMapper objectMapper;
 
 	@Autowired
 	private MockMvc mvc;
 
 	@Autowired
-	private CustomerService customerService;
+	private CustomerRepository customerRepository;
+
+	private Customer customer;
+
+	private String token;
 
 	@Autowired
-	ObjectMapper objectMapper;
+	private AuthorityRepository authorityRepository;
 
-	@Test
-	void save() throws Exception {
-		mvc.perform(post("/customers")
-						.contentType("application/json")
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
+	@BeforeAll()
+	public void bootstrap() throws Exception {
+		Authority authority = authorityRepository.findByType(AuthType.ADMIN).orElseThrow(NoSuchElementException::new);
+		Customer unsavedCustomer = new Customer("046.452.258.69",
+																						"Jhon Doe dos Santos",
+																						"jhon.doe",
+																						"jhon.doe@test.com",
+																						new BCryptPasswordEncoder().encode("123456"), Set.of(authority));
+		customer = customerRepository.save(unsavedCustomer);
+		token = getTokenForLogin("jhon.doe", "123456", getMockMvc());
 	}
 
 	@Test
+	@Order(1)
 	void findById() throws Exception {
-		mvc.perform(post("/customers")
-						.contentType("application/json")
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
-
-		CustomerDTO customerDTO = customerService.findAll().stream().findFirst().orElseThrow();
-
-		this.mvc.perform(get("/customers/" + customerDTO.getId()))
-				.andDo(print())
-				.andExpect(status().is(200));
+		this.mvc.perform(get("/customers/" + customer.getId()).header("Authorization", token))
+						.andDo(print())
+						.andExpect(status().isOk());
 	}
 
 	@Test
+	@Order(2)
 	void notFoundById() throws Exception {
-		this.mvc.perform(get("/customers/10"))
-				.andDo(print())
-				.andExpect(status().is(204));
-	}
-
-
-	@Test
-	void deleteCustomers() throws Exception {
-		mvc.perform(post("/customers/")
-						.contentType("application/json")
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
-
-		this.mvc.perform(delete("/customers/1").contentType("application/json"))
-				.andDo(print())
-				.andExpect(status().isNoContent());
-
-		this.mvc.perform(get("/customers/1"))
-				.andDo(print())
-				.andExpect(status().is(204));
+		this.mvc.perform(get("/customers/10").header("Authorization", token))
+						.andDo(print())
+						.andExpect(status().isNotFound());
 	}
 
 	@Test
+	@Order(3)
 	void findAll() throws Exception {
-		mvc.perform(post("/customers")
-						.contentType("application/json")
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
-		mvc.perform(post("/customers")
-						.contentType("application/json")
-						.content("{\"customerId\":\"03454323498\",\"name\":\"Junio Moura\",\"email\":\"junio.moura@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
-
-		mvc.perform(get("/customers"))
-				.andDo(print())
-				.andExpect(status().isOk());
+		mvc.perform(get("/customers").header("Authorization", token))
+			 .andDo(print())
+			 .andExpect(status().isOk());
 	}
 
 	@Test
+	@Order(4)
 	void updateCustomers() throws Exception {
-		mvc.perform(post("/customers")
-						.contentType("application/json")
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}"))
-				.andDo(print())
-				.andExpect(status().isOk());
+		this.mvc.perform(put("/customers/" + customer.getId())
+												 .header("Authorization", token)
+												 .content("{\"fullName\":\"Mauricio Junio Moura Mendes\"}")
+												 .contentType("application/json"))
+						.andDo(print())
+						.andExpect(status().isOk());
+	}
 
-		CustomerDTO customerDTO = customerService.findAll().stream().findFirst().orElseThrow();
+	@Test
+	@Order(5)
+	void deleteCustomers() throws Exception {
+		this.mvc.perform(delete("/customers/" + customer.getId()).header("Authorization", token))
+						.andDo(print())
+						.andExpect(status().isNoContent());
 
-		this.mvc.perform(put("/customers/" + customerDTO.getId())
-						.content("{\"customerId\":\"04238265185\",\"name\":\"Mauricio Junio Moura Mendes\",\"email\":\"mauricio.jmmendes@gmail.com\"}")
-						.contentType("application/json"))
-				.andDo(print())
-				.andExpect(status().is(200));
+		this.mvc.perform(get("/customers/" + customer.getId()))
+						.andDo(print())
+						.andExpect(status().isNotFound());
 	}
 }

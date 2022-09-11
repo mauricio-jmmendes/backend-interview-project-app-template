@@ -7,9 +7,20 @@ public class CustomerDTO {
 	private String documentId;
 
 	private String fullName;
+
 	private String nickname;
 
 	private String email;
+
+	public CustomerDTO(String documentId, String fullName, String nickname, String email) {
+		this.documentId = documentId;
+		this.fullName = fullName;
+		this.nickname = nickname;
+		this.email = email;
+	}
+
+	public CustomerDTO() {
+	}
 
 	public Long getId() {
 		return id;

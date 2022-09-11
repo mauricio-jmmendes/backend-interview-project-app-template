@@ -6,11 +6,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
+import com.ninjaone.backendinterviewproject.common.AppConstants.DeviceType;
 import com.ninjaone.backendinterviewproject.database.DeviceRepository;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.DeviceMapper;
 import com.ninjaone.backendinterviewproject.model.Device;
-import com.ninjaone.backendinterviewproject.model.DeviceType;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class DeviceServiceTestSupply {
+class DeviceServiceTest {
+
 	public static final Long ID = 123L;
 
 	@Mock
@@ -43,9 +47,9 @@ class DeviceServiceTestSupply {
 		device = new Device();
 		device.setId(ID);
 		device.setSystemName("Windows Server X");
-		device.setDeviceType(DeviceType.WINDOWS_SERVER);
+		device.setDeviceType(DeviceType.WINDOWS_SERVER.name());
 
-		deviceDTO = new DeviceDTO(String.valueOf(ID), "Windows Server X", DeviceType.WINDOWS_SERVER.toString());
+		deviceDTO = new DeviceDTO(String.valueOf(ID), "Windows Server X", DeviceType.WINDOWS_SERVER.name());
 
 	}
 
@@ -59,8 +63,11 @@ class DeviceServiceTestSupply {
 
 	@Test
 	void saveDeviceData() {
-		when(deviceRepository.save(device)).thenReturn(device);
-		assertEquals(deviceDTO, deviceService.saveEntity(deviceDTO));
+		when(deviceRepository.save(any(Device.class))).thenReturn(device);
+		when(deviceMapper.toEntity(any(DeviceDTO.class))).thenReturn(device);
+		when(deviceMapper.toDTO(any(Device.class))).thenReturn(deviceDTO);
+		DeviceDTO savedDevice = deviceService.createEntity(deviceDTO);
+		assertEquals(device.getDeviceType(), savedDevice.getType());
 	}
 
 	@Test

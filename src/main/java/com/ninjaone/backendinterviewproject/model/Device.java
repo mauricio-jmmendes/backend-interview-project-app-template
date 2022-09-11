@@ -8,8 +8,6 @@ import java.util.StringJoiner;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,18 +28,18 @@ public class Device implements Serializable {
 	@NotBlank
 	@Column(name = "system_name", unique = true)
 	private String systemName;
-	@Enumerated(EnumType.STRING)
-	@Column(name = "device_type", unique = true)
-	private DeviceType deviceType;
 
-	@OneToMany(mappedBy = "device", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<ServiceEntity> services = new HashSet<>();
+	@Column(name = "device_type", unique = true)
+	private String deviceType;
+
+	@OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private final Set<ServiceEntity> services = new HashSet<>();
 
 	@ManyToOne
-	@JoinColumn(name = "customer_id", referencedColumnName="id")
+	@JoinColumn(name = "customer_id", referencedColumnName = "id")
 	private Customer customer;
 
-	public Device(String systemName, DeviceType deviceType) {
+	public Device(String systemName, String deviceType) {
 		this.systemName = systemName;
 		this.deviceType = deviceType;
 	}
@@ -65,11 +63,11 @@ public class Device implements Serializable {
 		this.systemName = systemName;
 	}
 
-	public DeviceType getDeviceType() {
+	public String getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(DeviceType deviceType) {
+	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
 
@@ -83,7 +81,7 @@ public class Device implements Serializable {
 		}
 		Device device = (Device) o;
 		return id.equals(device.id) && systemName.equals(device.systemName)
-					 && deviceType == device.deviceType;
+					 && Objects.equals(deviceType, device.deviceType);
 	}
 
 	@Override

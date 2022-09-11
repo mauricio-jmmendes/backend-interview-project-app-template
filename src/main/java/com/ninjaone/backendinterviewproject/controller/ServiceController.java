@@ -33,8 +33,8 @@ public class ServiceController {
 			throw new InvalidRequestException(errResult);
 		}
 
-			ServiceDTO savedDevice = serviceManager.saveEntity(serviceDTO);
-			return ResponseEntity.ok(savedDevice);
+		ServiceDTO savedDevice = serviceManager.saveEntity(serviceDTO);
+		return ResponseEntity.ok(savedDevice);
 
 	}
 

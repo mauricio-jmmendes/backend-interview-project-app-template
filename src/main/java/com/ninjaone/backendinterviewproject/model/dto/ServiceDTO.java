@@ -1,13 +1,22 @@
 package com.ninjaone.backendinterviewproject.model.dto;
 
+import com.ninjaone.backendinterviewproject.model.ServiceEntity.Status;
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class ServiceDTO {
 
 	private Long id;
+
 	private String type;
+
 	private String description;
+
 	private BigDecimal cost;
+
+	private Date executionDate;
+
+	private Status status;
 
 	public ServiceDTO(Long id, String type, String description, BigDecimal cost) {
 		this.id = id;
@@ -51,5 +60,19 @@ public class ServiceDTO {
 		this.cost = cost;
 	}
 
+	public Date getExecutionDate() {
+		return executionDate;
+	}
 
+	public void setExecutionDate(Date executionDate) {
+		this.executionDate = executionDate;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 }

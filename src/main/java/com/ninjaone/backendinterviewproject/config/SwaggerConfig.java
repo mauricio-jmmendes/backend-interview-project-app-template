@@ -21,45 +21,47 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-    @Bean
-    public Docket Api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(metaData())
-                .securityContexts(Collections.singletonList(securityContext()))
-                .securitySchemes(Collections.singletonList(apiKey()))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.ninjaone.backendinterviewproject.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(metaData());
-    }
-    private @NotNull ApiInfo metaData() {
-        return new ApiInfo(
-                "Backend Engineer Task for NinjaOne",
-                "Remote Monitoring and Management",
-                "1.0",
-                "Terms of service",
-                new Contact("Mauricio Mendes", "https://github.com/mauricio-jmmendes/backend-interview-project-app-template", "mauricio.jmmendes@gmail.com"),
-                "Apache License Version 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0",
-                Collections.emptyList());
-    }
 
-    private ApiKey apiKey() {
-        return new ApiKey("JWT", "Authorization", "header");
-    }
+	@Bean
+	public Docket Api() {
+		return new Docket(DocumentationType.SWAGGER_2)
+				.apiInfo(metaData())
+				.securityContexts(Collections.singletonList(securityContext()))
+				.securitySchemes(Collections.singletonList(apiKey()))
+				.select()
+				.apis(RequestHandlerSelectors.basePackage("com.ninjaone.backendinterviewproject.controller"))
+				.paths(PathSelectors.any())
+				.build()
+				.apiInfo(metaData());
+	}
 
-    private SecurityContext securityContext() {
-        return SecurityContext.builder()
-                .securityReferences(defaultAuth())
-                .build();
-    }
+	private @NotNull ApiInfo metaData() {
+		return new ApiInfo(
+				"Backend Engineer Task for NinjaOne",
+				"Remote Monitoring and Management",
+				"1.0",
+				"Terms of service",
+				new Contact("Mauricio Mendes", "https://github.com/mauricio-jmmendes/backend-interview-project-app-template", "mauricio.jmmendes@gmail.com"),
+				"Apache License Version 2.0",
+				"https://www.apache.org/licenses/LICENSE-2.0",
+				Collections.emptyList());
+	}
 
-    List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope
-                = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return List.of(new SecurityReference("JWT", authorizationScopes));
-    }
+	private ApiKey apiKey() {
+		return new ApiKey("JWT", "Authorization", "header");
+	}
+
+	private SecurityContext securityContext() {
+		return SecurityContext.builder()
+													.securityReferences(defaultAuth())
+													.build();
+	}
+
+	List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope
+				= new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return List.of(new SecurityReference("JWT", authorizationScopes));
+	}
 }

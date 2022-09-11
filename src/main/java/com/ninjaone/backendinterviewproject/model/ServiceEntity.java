@@ -15,26 +15,32 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Entity
 @Table(name = "service")
 public class ServiceEntity implements Serializable {
-
-	public enum Status {
-		PENDING, DONE
-	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
 	private Long id;
 
+	@NotBlank
 	@Enumerated(EnumType.STRING)
-	@Column(name = "service_type", unique = true)
+	@Column(name = "service_type")
 	private ServiceType serviceType;
+
+	@NotBlank
 	private String description;
+
+	@NotNull
+	@Positive
 	private BigDecimal cost;
 
+	@Column(name = "execution_date")
 	private Date executionDate;
 
 	private Status status;
@@ -137,5 +143,9 @@ public class ServiceEntity implements Serializable {
 				.add("status=" + status)
 				.add("device=" + device)
 				.toString();
+	}
+
+	public enum Status {
+		PENDING, DONE
 	}
 }

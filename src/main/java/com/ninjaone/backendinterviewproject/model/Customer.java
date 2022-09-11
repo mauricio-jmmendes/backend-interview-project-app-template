@@ -1,6 +1,7 @@
 package com.ninjaone.backendinterviewproject.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,6 +34,7 @@ public class Customer implements Serializable {
 	@Column(unique = true, nullable = false)
 	private Long id;
 
+	@NaturalId
 	@NotBlank
 	@Size(max = 20)
 	@Column(name = "document_id", unique = true)
@@ -48,7 +50,6 @@ public class Customer implements Serializable {
 	@Column(unique = true)
 	private String nickname;
 
-	@NaturalId
 	@NotBlank
 	@Size(max = 64)
 	@Email
@@ -62,15 +63,20 @@ public class Customer implements Serializable {
 	@JoinTable(name = "customer_authorities", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
 	private Set<Authority> authorities = new HashSet<>();
 
-	@OneToMany(mappedBy = "customer", cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Device> devices = new HashSet<>();
 
-	public Customer(String documentId, String fullName, String nickname, String email, String password) {
+	public Customer(String documentId, String fullName, String nickname, String email, String password, Set<Authority> authorities) {
 		this.documentId = documentId;
 		this.fullName = fullName;
 		this.nickname = nickname;
 		this.email = email;
 		this.password = password;
+		this.authorities = authorities;
+	}
+
+	public Customer(String documentId, String fullName, String nickname, String email, String password) {
+		this(documentId, fullName, nickname, email, password, Collections.emptySet());
 	}
 
 	public Customer() {
@@ -132,12 +138,28 @@ public class Customer implements Serializable {
 		this.authorities = authorities;
 	}
 
+	public void addAuthority(Authority authority) {
+		this.authorities.add(authority);
+	}
+
+	public void removeAuthority(Authority authority) {
+		this.authorities.remove(authority);
+	}
+
 	public Set<Device> getDevices() {
 		return devices;
 	}
 
 	public void setDevices(Set<Device> devices) {
 		this.devices = devices;
+	}
+
+	public void addDevice(Device device) {
+		this.devices.add(device);
+	}
+
+	public void removeDevice(Device device) {
+		this.devices.remove(device);
 	}
 
 	@Override

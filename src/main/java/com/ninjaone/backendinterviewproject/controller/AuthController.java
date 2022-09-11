@@ -90,7 +90,8 @@ public class AuthController {
 
 		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Authority authority = authorityRepository.findByType(AuthType.USER)
-																						 .orElseThrow(() -> new ResourceNotFoundException("Authority", AuthType.USER.name(), "Customer Authority not set."));
+																						 .orElseThrow(
+																								 () -> new ResourceNotFoundException("Authority", AuthType.USER.name(), "Customer Authority not set."));
 
 		customer.setAuthorities(Collections.singleton(authority));
 		Customer savedCustomer = customerRepository.save(customer);

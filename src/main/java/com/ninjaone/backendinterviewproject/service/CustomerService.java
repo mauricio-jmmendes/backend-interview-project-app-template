@@ -46,10 +46,7 @@ public class CustomerService {
 
 	public void mergeEntity(Long id, CustomerDTO customerDTO) throws ResourceNotFoundException {
 		Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(AppConstants.CUSTOMER, "id", id));
-		Customer toBeUpdated = customerMapper.toEntity(customerDTO);
-		customer.setDocumentId(toBeUpdated.getDocumentId());
-		customer.setFullName(toBeUpdated.getFullName());
-		customer.setEmail(toBeUpdated.getEmail());
+		customerMapper.update(customerDTO, customer);
 		customerRepository.save(customer);
 	}
 

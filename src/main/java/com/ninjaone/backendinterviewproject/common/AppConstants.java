@@ -1,11 +1,16 @@
 package com.ninjaone.backendinterviewproject.common;
 
-public class AppConstants {
+public final class AppConstants {
+
 	public static final String CUSTOMER = "Customer";
 	public static final String DEVICE = "Device";
 	public static final String SERVICE = "Service";
 
 	private AppConstants() {
 		throw new IllegalStateException("Utility class");
+	}
+
+	public enum DeviceType {
+		WINDOWS_WORKSTATION, WINDOWS_SERVER, LINUX, MAC
 	}
 }
