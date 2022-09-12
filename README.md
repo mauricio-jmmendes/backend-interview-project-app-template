@@ -52,7 +52,7 @@ Let's add a device to our logged customer:
         ]}
      ``` 
 
-Let's purchased a service for our newly created device:
+Let's purchase a service for our newly created device:
    * ```
      curl -X POST "http://localhost:8080/customers/services/?cost=4&description=Regular%20monthly%20maintenance&deviceId=1&status=DONE&type=DEVICE_MAINTENANCE" -H "accept: */*" -H "Authorization: eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjYyOTc5OTk4LCJleHAiOjE2NjMwODc5OTh9.w5uYdH03znfjVzTbYelEBavoEc3RWEmrVmdEiaXmjSA" -d ""
      ``` 
@@ -89,11 +89,33 @@ Let's purchased a service for our newly created device:
     
      ```
 
+And finally, we can generate a monthly statement with our expendings in services
+   * ```
+     curl -X GET "http://localhost:8080/customers/services/monthly-statement" -H "accept: */*" -H "Authorization: eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjYyOTc5OTk4LCJleHAiOjE2NjMwODc5OTh9.w5uYdH03znfjVzTbYelEBavoEc3RWEmrVmdEiaXmjSA"
+     ``` 
+   * ```
+     {
+        "period": "P30D",
+        "statements": [
+            {
+            "date": "2022-08-18",
+            "deviceDescription": "WORKSTATION",
+            "serviceDescription": "Regular monthly maintenance",
+            "price": 4
+            }
+        ],
+        "totalPrice": 4
+     }
+    
+     ```
+
 ## Device Controller
 
-Here a logged customer can list, update and delete their devices, if Admin all devices can be listed, updated or deleted. 
+Here a logged customer can list, update and delete their devices, if Admin user all devices can be listed, updated or deleted. 
 
 ## Service Controller
+
+And here, a logged customer can list, update and delete their services, if Admin user all services can be listed, updated or deleted. 
 
 ## H2 Console 
 
@@ -110,16 +132,13 @@ username: sa
 password: password
 ```
 
-You should be able to see a db console now that has the Sample Repository in it.
+You should be able to see a db console now where we can check all the data we posted using the API.
 
 Type:
 
 ```sql
-SELECT * FROM SAMPLE;
+SELECT * FROM CUSTOMER ;
 ````
 
-Click `Run`, you should see two rows, for ids `1` and `2`
-
-### Suggestions
-
-Feel free to remove or repurpose the existing Sample Repository, Entity, Controller, and Service. 
+Click `Run`, you should see the data in customer table, as shown below:
+![image](https://user-images.githubusercontent.com/6773754/189649775-29bca52c-9187-443c-a0d6-c704ae14fd53.png)
