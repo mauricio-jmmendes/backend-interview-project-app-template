@@ -4,7 +4,7 @@ import com.ninjaone.backendinterviewproject.common.AppConstants.ServiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class ServiceDTO {
+public class ServiceOrderDTO {
 
 	private Long id;
 
@@ -18,14 +18,17 @@ public class ServiceDTO {
 
 	private ServiceStatus status;
 
-	public ServiceDTO(Long id, String type, String description, BigDecimal cost) {
+	private Long deviceId;
+
+	public ServiceOrderDTO(Long id, String type, String description, BigDecimal cost, Long deviceId) {
 		this.id = id;
 		this.type = type;
 		this.description = description;
 		this.cost = cost;
+		this.deviceId = deviceId;
 	}
 
-	public ServiceDTO() {
+	public ServiceOrderDTO() {
 	}
 
 	public Long getId() {
@@ -74,5 +77,13 @@ public class ServiceDTO {
 
 	public void setStatus(ServiceStatus status) {
 		this.status = status;
+	}
+
+	public Long getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(Long deviceId) {
+		this.deviceId = deviceId;
 	}
 }

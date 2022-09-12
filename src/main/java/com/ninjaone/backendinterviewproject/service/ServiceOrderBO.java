@@ -5,7 +5,7 @@ import com.ninjaone.backendinterviewproject.database.ServiceRepository;
 import com.ninjaone.backendinterviewproject.exception.ResourceNotFoundException;
 import com.ninjaone.backendinterviewproject.mappings.ServiceMapper;
 import com.ninjaone.backendinterviewproject.model.ServiceOrder;
-import com.ninjaone.backendinterviewproject.model.dto.ServiceDTO;
+import com.ninjaone.backendinterviewproject.model.dto.ServiceOrderDTO;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,8 @@ public class ServiceOrderBO {
 		this.serviceMapper = serviceMapper;
 	}
 
-	public ServiceOrder save(ServiceDTO serviceDTO) {
-		ServiceOrder serviceOrder = serviceMapper.toEntity(serviceDTO);
+	public ServiceOrder save(ServiceOrderDTO serviceOrderDTO) {
+		ServiceOrder serviceOrder = serviceMapper.toEntity(serviceOrderDTO);
 		serviceRepository.save(serviceOrder);
 		return serviceOrder;
 	}
@@ -45,5 +45,16 @@ public class ServiceOrderBO {
 
 	public ServiceRepository repository() {
 		return serviceRepository;
+	}
+
+	public List<ServiceOrder> findAllByDeviceIdIn(List<Long> deviceIdList) {
+		return serviceRepository.findAllByDeviceIdIn(deviceIdList);
+	}
+
+	public ServiceOrder update(ServiceOrderDTO serviceOrderDTO) throws ResourceNotFoundException {
+		ServiceOrder service = serviceRepository.findById(serviceOrderDTO.getId())
+																						.orElseThrow(() -> new ResourceNotFoundException(AppConstants.SERVICE, "Id", serviceOrderDTO.getId()));
+		serviceMapper.update(serviceOrderDTO, service);
+		return serviceRepository.save(service);
 	}
 }

@@ -10,9 +10,9 @@ public class DeviceDTO {
 
 	private String type;
 
-	private List<ServiceDTO> purchasedServices;
+	private List<ServiceOrderDTO> purchasedServices;
 
-	public DeviceDTO(Long id, String systemName, String type, List<ServiceDTO> purchasedServices) {
+	public DeviceDTO(Long id, String systemName, String type, List<ServiceOrderDTO> purchasedServices) {
 		this.id = id;
 		this.systemName = systemName;
 		this.type = type;
@@ -46,11 +46,11 @@ public class DeviceDTO {
 		this.type = type;
 	}
 
-	public List<ServiceDTO> getPurchasedServices() {
+	public List<ServiceOrderDTO> getPurchasedServices() {
 		return purchasedServices;
 	}
 
-	public void setPurchasedServices(List<ServiceDTO> purchasedServices) {
+	public void setPurchasedServices(List<ServiceOrderDTO> purchasedServices) {
 		this.purchasedServices = purchasedServices;
 	}
 }

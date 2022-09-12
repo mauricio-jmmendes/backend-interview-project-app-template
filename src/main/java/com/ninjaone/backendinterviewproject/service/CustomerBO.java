@@ -22,6 +22,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,6 @@ public class CustomerBO {
 	}
 
 	public CustomerDTO addDevice(AuthenticatedUser currentUser, DeviceDTO deviceDTO) {
-//		Device device = deviceRepository.save(deviceMapper.toEntity(deviceDTO));
 		Device device = deviceMapper.toEntity(deviceDTO);
 		Customer customer = customerRepository.findById(currentUser.getId())
 																					.orElseThrow(() -> new ResourceNotFoundException(AppConstants.CUSTOMER, "id", currentUser.getId()));
@@ -95,7 +95,8 @@ public class CustomerBO {
 
 		ServiceOrder service = new ServiceOrder(osr.getType(), osr.getDescription(), osr.getCost(), osr.getStatus());
 		if (ServiceStatus.DONE.equals(service.getStatus())) {
-			service.setExecutionDate(LocalDate.now());
+			int randomNum = new Random().nextInt(30);
+			service.setExecutionDate(LocalDate.now().minusDays(randomNum));
 		}
 		device.addService(service);
 		customer.addDevice(device);

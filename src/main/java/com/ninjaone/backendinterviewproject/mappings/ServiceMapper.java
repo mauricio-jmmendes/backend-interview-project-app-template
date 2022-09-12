@@ -1,7 +1,7 @@
 package com.ninjaone.backendinterviewproject.mappings;
 
 import com.ninjaone.backendinterviewproject.model.ServiceOrder;
-import com.ninjaone.backendinterviewproject.model.dto.ServiceDTO;
+import com.ninjaone.backendinterviewproject.model.dto.ServiceOrderDTO;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,12 +15,13 @@ public interface ServiceMapper {
 	ServiceMapper INSTANCE = Mappers.getMapper(ServiceMapper.class);
 
 	@Mapping(source = "serviceType", target = "type")
-	ServiceDTO toDTO(ServiceOrder service);
+	@Mapping(source = "entity.device.id", target = "deviceId")
+	ServiceOrderDTO toDTO(ServiceOrder entity);
 
 	@Mapping(source = "type", target = "serviceType")
-	ServiceOrder toEntity(ServiceDTO serviceDTO);
+	ServiceOrder toEntity(ServiceOrderDTO serviceOrderDTO);
 
 	@InheritConfiguration
-	void update(ServiceDTO source, @MappingTarget ServiceOrder target);
+	void update(ServiceOrderDTO source, @MappingTarget ServiceOrder target);
 
 }

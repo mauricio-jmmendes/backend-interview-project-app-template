@@ -37,6 +37,10 @@ public class DeviceBO {
 		return deviceRepository.findAll();
 	}
 
+	public List<Device> findAllByCustomerId(Long customerId) {
+		return deviceRepository.findAllByCustomerId(customerId);
+	}
+
 	public Device update(DeviceDTO deviceDTO) throws ResourceNotFoundException {
 		Device device = deviceRepository.findById(deviceDTO.getId()).orElseThrow(() -> new ResourceNotFoundException(AppConstants.DEVICE, "Id", deviceDTO.getId()));
 		deviceMapper.update(deviceDTO, device);
